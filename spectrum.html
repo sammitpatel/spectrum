@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spectrum Bands Dashboard</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    />
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+        }
+        .table-responsive {
+            max-height: 70vh;
+        }
+        .table th {
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+        .search-bar-wrapper {
+            position: relative;
+        }
+        .search-bar {
+            border-radius: .375rem;
+            border: 1px solid #ced4da;
+            padding: .375rem 2.5rem .375rem .75rem;
+        }
+        .clear-search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+        }
+        .slicer-group .btn {
+            text-align: left;
+        }
+        .dropdown-menu {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .muted {
+            color: #6c757d;
+        }
+        /* Deployments cell: auto-fit width */
+        .deployments-cell {
+            max-width: none;
+            width: auto;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .deployments-preview .region-line {
+            font-size: 0.92rem;
+            line-height: 1.2rem;
+            margin-bottom: .25rem;
+            white-space: normal;
+        }
+        .deployments-preview .badge {
+            font-weight: 500;
+        }
+        .deployments-preview .more-link {
+            font-size: 0.9rem;
+        }
+        .deployments-actions {
+            margin-top: .25rem;
+        }
+        .modal-body .region-block {
+            margin-bottom: .75rem;
+        }
+        .modal-body .region-title {
+            font-weight: 600;
+            margin-bottom: .25rem;
+        }
+        .modal-body .op-badge {
+            margin: 2px 4px 2px 0;
+        }
+
+        /* Subtle horizontal gridlines for a modern look */
+        .table tbody td {
+            border-top: 1px solid #e9ecef;
+        }
+        .table-hover tbody tr:hover td {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Region pills */
+        .region-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+        .region-pill {
+            cursor: pointer;
+            user-select: none;
+            padding: .45rem .65rem;
+        }
+        .region-pill.bg-primary {
+            box-shadow: 0 0 0 .1rem rgba(13,110,253,.15);
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="container-fluid mt-4"></div>
+
+    <!-- Embed data (self-contained) -->
+    <script id="bands-json" type="application/json">
+      
+{
+  "bands": [
+    {
+      "bandNumber": "n1",
+      "bandName": "IMT",
+      "centerFreq": "2100",
+      "uplinkRange": "1920-1980",
+      "downlinkRange": "2110-2170",
+      "duplexMode": "FDD",
+      "region": "North America; Europe; Western Asia (Middle East); Africa; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "Denmark – 3",
+          "France – Bouygues",
+          "Greece – COSMOTE",
+          "Hungary – Telekom",
+          "Montenegro – CT",
+          "North Macedonia – Telekom",
+          "Norway – ice",
+          "Poland – Orange",
+          "Portugal – MEO",
+          "Sweden – 3",
+          "United Kingdom – 3",
+          "United Kingdom – EE"
+        ],
+        "Western Asia (Middle East)": [
+          "United Arab Emirates – du"
+        ],
+        "Africa": [
+          "South Africa – MTN"
+        ],
+        "Oceania": [
+          "Australia – Optus"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n2",
+      "bandName": "PCS",
+      "centerFreq": "1900",
+      "uplinkRange": "1850-1910",
+      "downlinkRange": "1930-1990",
+      "duplexMode": "FDD",
+      "region": "North America; Latin America & Caribbean; Europe; Western Asia (Middle East); Southern Asia",
+      "deployments": {
+        "North America": [
+          "Canada – Bell",
+          "Canada – Rogers",
+          "Canada – TELUS",
+          "United States – AT&T",
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ],
+        "Latin America & Caribbean": [
+          "Mexico – AT&T Mexico",
+          "Mexico – Telcel"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ],
+        "Western Asia (Middle East)": [
+          "United Arab Emirates – du"
+        ],
+        "Southern Asia": [
+          "India – Bharti Airtel"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n3",
+      "bandName": "DCS",
+      "centerFreq": "1800",
+      "uplinkRange": "1710-1785",
+      "downlinkRange": "1805-1880",
+      "duplexMode": "FDD",
+      "region": "North America; Europe; Southern Asia; South-Eastern Asia; Africa; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "Greece – COSMOTE",
+          "Portugal – MEO",
+          "United Kingdom – EE"
+        ],
+        "Southern Asia": [
+          "India – Bharti Airtel"
+        ],
+        "South-Eastern Asia": [
+          "Indonesia – Indosat Ooredoo Hutchison"
+        ],
+        "Africa": [
+          "South Africa – MTN"
+        ],
+        "Oceania": [
+          "Australia – Optus"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n5",
+      "bandName": "CLR",
+      "centerFreq": "800",
+      "uplinkRange": "824-849",
+      "downlinkRange": "869-894",
+      "duplexMode": "FDD",
+      "region": "North America; Latin America & Caribbean; Europe; Oceania",
+      "deployments": {
+        "North America": [
+          "Canada – Bell",
+          "Canada – Rogers",
+          "Canada – TELUS",
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Latin America & Caribbean": [
+          "Brazil – Claro",
+          "Brazil – TIM",
+          "Brazil – Vivo"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n7",
+      "bandName": "IMT-E",
+      "centerFreq": "2600",
+      "uplinkRange": "2500-2570",
+      "downlinkRange": "2620-2690",
+      "duplexMode": "FDD",
+      "region": "North America; Europe; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n8",
+      "bandName": "Extended GSM",
+      "centerFreq": "900",
+      "uplinkRange": "880-915",
+      "downlinkRange": "925-960",
+      "duplexMode": "FDD",
+      "region": "North America; Europe; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ],
+        "Oceania": [
+          "Australia – Optus"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n12",
+      "bandName": "Lower SMH",
+      "centerFreq": "700",
+      "uplinkRange": "699-716",
+      "downlinkRange": "729-746",
+      "duplexMode": "FDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n13",
+      "bandName": "Upper SMH",
+      "centerFreq": "700",
+      "uplinkRange": "777-787",
+      "downlinkRange": "746-756",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n14",
+      "bandName": "Upper SMH",
+      "centerFreq": "700",
+      "uplinkRange": "788-798",
+      "downlinkRange": "758-768",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n18",
+      "bandName": "Lower 800",
+      "centerFreq": "800",
+      "uplinkRange": "815-830",
+      "downlinkRange": "860-875",
+      "duplexMode": "FDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n20",
+      "bandName": "Digital Dividend",
+      "centerFreq": "800",
+      "uplinkRange": "832-862",
+      "downlinkRange": "791-821",
+      "duplexMode": "FDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n24",
+      "bandName": "Upper L-band",
+      "centerFreq": "1500",
+      "uplinkRange": "1626.5-1660.5",
+      "downlinkRange": "1525-1559",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n25",
+      "bandName": "Extended PCS",
+      "centerFreq": "1900",
+      "uplinkRange": "1850-1915",
+      "downlinkRange": "1930-1995",
+      "duplexMode": "FDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – T-Mobile"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n26",
+      "bandName": "Extended CLR",
+      "centerFreq": "800",
+      "uplinkRange": "814-849",
+      "downlinkRange": "859-894",
+      "duplexMode": "FDD",
+      "region": "North America; Europe; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n28",
+      "bandName": "APT",
+      "centerFreq": "700",
+      "uplinkRange": "703-748",
+      "downlinkRange": "758-803",
+      "duplexMode": "FDD",
+      "region": "Europe; Southern Asia; Oceania",
+      "deployments": {
+        "Europe": [
+          "Norway – ice",
+          "United Kingdom – 3",
+          "United Kingdom – EE"
+        ],
+        "Southern Asia": [
+          "India – Jio"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n29",
+      "bandName": "Lower SMH",
+      "centerFreq": "700",
+      "uplinkRange": "",
+      "downlinkRange": "717-728",
+      "duplexMode": "SDL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – AT&T"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n30",
+      "bandName": "WCS",
+      "centerFreq": "2300",
+      "uplinkRange": "2305-2315",
+      "downlinkRange": "2350-2360",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – AT&T"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n31",
+      "bandName": "NMT",
+      "centerFreq": "400",
+      "uplinkRange": "452.5-457.5",
+      "downlinkRange": "462.5-467.5",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n34",
+      "bandName": "IMT",
+      "centerFreq": "2000",
+      "uplinkRange": "2010-2025",
+      "downlinkRange": "2010-2025",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n38",
+      "bandName": "IMT-E",
+      "centerFreq": "2500",
+      "uplinkRange": "2570-2620",
+      "downlinkRange": "2570-2620",
+      "duplexMode": "TDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "Romania – Digi",
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n39",
+      "bandName": "DCS–IMT Gap",
+      "centerFreq": "1900",
+      "uplinkRange": "1880-1920",
+      "downlinkRange": "1880-1920",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n40",
+      "bandName": "S-Band",
+      "centerFreq": "2300",
+      "uplinkRange": "2300-2400",
+      "downlinkRange": "2300-2400",
+      "duplexMode": "TDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n41",
+      "bandName": "BRS",
+      "centerFreq": "2500",
+      "uplinkRange": "2496-2690",
+      "downlinkRange": "2496-2690",
+      "duplexMode": "TDD",
+      "region": "North America; Europe; Western Asia (Middle East); Eastern Asia",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ],
+        "Western Asia (Middle East)": [
+          "United Arab Emirates – du",
+          "United Arab Emirates – e&"
+        ],
+        "Eastern Asia": [
+          "China – China Mobile",
+          "China – China Telecom",
+          "China – China Unicom"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n46",
+      "bandName": "U-NII-1–4",
+      "centerFreq": "5500",
+      "uplinkRange": "5150-5925",
+      "downlinkRange": "5150-5925",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n47",
+      "bandName": "U-NII-4",
+      "centerFreq": "5800",
+      "uplinkRange": "5855-5925",
+      "downlinkRange": "5855-5925",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n48",
+      "bandName": "CBRS",
+      "centerFreq": "3600",
+      "uplinkRange": "3550-3700",
+      "downlinkRange": "3550-3700",
+      "duplexMode": "TDD",
+      "region": "North America; Europe",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n50",
+      "bandName": "L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "1432-1517",
+      "downlinkRange": "1432-1517",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n51",
+      "bandName": "L-Band Extension",
+      "centerFreq": "1400",
+      "uplinkRange": "1427-1432",
+      "downlinkRange": "1427-1432",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n53",
+      "bandName": "S band",
+      "centerFreq": "2400",
+      "uplinkRange": "2483.5-2495",
+      "downlinkRange": "2483.5-2495",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n54",
+      "bandName": "L-band",
+      "centerFreq": "1600",
+      "uplinkRange": "1670-1675",
+      "downlinkRange": "1670-1675",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n65",
+      "bandName": "Extended IMT",
+      "centerFreq": "2100",
+      "uplinkRange": "1920-2010",
+      "downlinkRange": "2110-2200",
+      "duplexMode": "FDD",
+      "region": "North America; Southern Asia",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Southern Asia": [
+          "India – Bharti Airtel"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n66",
+      "bandName": "Extended AWS",
+      "centerFreq": "2100",
+      "uplinkRange": "1710-1780",
+      "downlinkRange": "2110-2200",
+      "duplexMode": "FDD",
+      "region": "North America; Latin America & Caribbean; Europe",
+      "deployments": {
+        "North America": [
+          "Canada – Bell",
+          "Canada – Rogers",
+          "Canada – TELUS",
+          "United States – AT&T",
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ],
+        "Latin America & Caribbean": [
+          "Mexico – AT&T Mexico"
+        ],
+        "Europe": [
+          "United Kingdom – EE"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n67",
+      "bandName": "EU 700",
+      "centerFreq": "700",
+      "uplinkRange": "",
+      "downlinkRange": "738-758",
+      "duplexMode": "SDL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n70",
+      "bandName": "Supplementary AWS",
+      "centerFreq": "2000",
+      "uplinkRange": "1695-1710",
+      "downlinkRange": "1995-2020",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n71",
+      "bandName": "Digital Dividend",
+      "centerFreq": "600",
+      "uplinkRange": "663-698",
+      "downlinkRange": "617-652",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "Canada – SaskTel",
+          "United States – AT&T",
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n72",
+      "bandName": "PMR",
+      "centerFreq": "400",
+      "uplinkRange": "451-456",
+      "downlinkRange": "461-466",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n74",
+      "bandName": "Lower L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "1427-1470",
+      "downlinkRange": "1475-1518",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n75",
+      "bandName": "L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "",
+      "downlinkRange": "1432-1517",
+      "duplexMode": "SDL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n76",
+      "bandName": "L-Band Extension",
+      "centerFreq": "1400",
+      "uplinkRange": "",
+      "downlinkRange": "1427-1432",
+      "duplexMode": "SDL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n77",
+      "bandName": "C-Band",
+      "centerFreq": "3700",
+      "uplinkRange": "3300-4200",
+      "downlinkRange": "3300-4200",
+      "duplexMode": "TDD",
+      "region": "North America; Europe; Southern Asia; Eastern Asia; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "France – Orange",
+          "Germany – Deutsche Telekom",
+          "United Kingdom – EE"
+        ],
+        "Southern Asia": [
+          "India – Bharti Airtel",
+          "India – Jio"
+        ],
+        "Eastern Asia": [
+          "Japan – NTT Docomo",
+          "South Korea – SK Telecom"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n78",
+      "bandName": "C-Band",
+      "centerFreq": "3500",
+      "uplinkRange": "3300-3800",
+      "downlinkRange": "3300-3800",
+      "duplexMode": "TDD",
+      "region": "North America; Europe; Western Asia (Middle East); Southern Asia; Eastern Asia; South-Eastern Asia; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – AT&T",
+          "United States – Verizon"
+        ],
+        "Europe": [
+          "France – Bouygues Telecom",
+          "France – Orange",
+          "Germany – Deutsche Telekom",
+          "Germany – Vodafone Germany",
+          "Italy – TIM",
+          "Italy – Vodafone Italy",
+          "Spain – Movistar",
+          "United Kingdom – EE",
+          "United Kingdom – O2",
+          "United Kingdom – Three",
+          "United Kingdom – Vodafone UK"
+        ],
+        "Western Asia (Middle East)": [
+          "United Arab Emirates – du",
+          "United Arab Emirates – e&"
+        ],
+        "Southern Asia": [
+          "India – Jio"
+        ],
+        "Eastern Asia": [
+          "Japan – NTT Docomo",
+          "South Korea – SK Telecom"
+        ],
+        "South-Eastern Asia": [
+          "Singapore – Singtel"
+        ],
+        "Oceania": [
+          "Australia – Optus",
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n79",
+      "bandName": "C-Band",
+      "centerFreq": "4700",
+      "uplinkRange": "4400-5000",
+      "downlinkRange": "4400-5000",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n80",
+      "bandName": "DCS",
+      "centerFreq": "1700",
+      "uplinkRange": "1710-1785",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n81",
+      "bandName": "Extended GSM",
+      "centerFreq": "800",
+      "uplinkRange": "880-915",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n82",
+      "bandName": "Digital Dividend",
+      "centerFreq": "800",
+      "uplinkRange": "832-862",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n83",
+      "bandName": "APT",
+      "centerFreq": "700",
+      "uplinkRange": "703-748",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n84",
+      "bandName": "IMT",
+      "centerFreq": "1900",
+      "uplinkRange": "1920-1980",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n85",
+      "bandName": "Extended Lower SMH",
+      "centerFreq": "700",
+      "uplinkRange": "698-716",
+      "downlinkRange": "728-746",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n86",
+      "bandName": "Extended AWS",
+      "centerFreq": "1700",
+      "uplinkRange": "1710-1780",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n89",
+      "bandName": "CLR",
+      "centerFreq": "800",
+      "uplinkRange": "824-849",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n90",
+      "bandName": "BRS",
+      "centerFreq": "2500",
+      "uplinkRange": "2496-2690",
+      "downlinkRange": "2496-2690",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n91",
+      "bandName": "DD L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "832-862",
+      "downlinkRange": "1427-1432",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n92",
+      "bandName": "DD L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "832-862",
+      "downlinkRange": "1432-1517",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n93",
+      "bandName": "Extended GSM L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "880-915",
+      "downlinkRange": "1427-1432",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n94",
+      "bandName": "Extended GSM L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "880-915",
+      "downlinkRange": "1432-1517",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n95",
+      "bandName": "IMT",
+      "centerFreq": "2000",
+      "uplinkRange": "2010-2025",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n96",
+      "bandName": "U-NII-5–8",
+      "centerFreq": "6500",
+      "uplinkRange": "5925-7125",
+      "downlinkRange": "5925-7125",
+      "duplexMode": "TDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n97",
+      "bandName": "S-Band",
+      "centerFreq": "2300",
+      "uplinkRange": "2300-2400",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n98",
+      "bandName": "DCS–IMT Gap",
+      "centerFreq": "1900",
+      "uplinkRange": "1880-1920",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n99",
+      "bandName": "Upper L-band",
+      "centerFreq": "1600",
+      "uplinkRange": "1626.5-1660.5",
+      "downlinkRange": "",
+      "duplexMode": "SUL",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n100",
+      "bandName": "GSM-R",
+      "centerFreq": "900",
+      "uplinkRange": "874.4-880",
+      "downlinkRange": "919.4-925",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n101",
+      "bandName": "FRMCS",
+      "centerFreq": "1900",
+      "uplinkRange": "1900-1910",
+      "downlinkRange": "1900-1910",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n102",
+      "bandName": "U-NII-5",
+      "centerFreq": "6100",
+      "uplinkRange": "5925-6425",
+      "downlinkRange": "5925-6425",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n104",
+      "bandName": "U-NII-6–8",
+      "centerFreq": "6700",
+      "uplinkRange": "6425-7125",
+      "downlinkRange": "6425-7125",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n105",
+      "bandName": "Digital Dividend",
+      "centerFreq": "600",
+      "uplinkRange": "663-703",
+      "downlinkRange": "612-652",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n106",
+      "bandName": "LMRS",
+      "centerFreq": "900",
+      "uplinkRange": "896-901",
+      "downlinkRange": "935-940",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n109",
+      "bandName": "APT L-Band",
+      "centerFreq": "1400",
+      "uplinkRange": "703-733",
+      "downlinkRange": "1432-1517",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n254",
+      "bandName": "S-band",
+      "centerFreq": "2400",
+      "uplinkRange": "1610-1626.5",
+      "downlinkRange": "2483.5-2500",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n255",
+      "bandName": "Upper L-band",
+      "centerFreq": "1500",
+      "uplinkRange": "1626.5-1660.5",
+      "downlinkRange": "1525-1559",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n256",
+      "bandName": "S-band",
+      "centerFreq": "2100",
+      "uplinkRange": "1980-2010",
+      "downlinkRange": "2170-2200",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n257",
+      "bandName": "LMDS",
+      "centerFreq": "0",
+      "uplinkRange": "26.5-29.5",
+      "downlinkRange": "",
+      "duplexMode": "",
+      "region": "North America; Eastern Asia; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ],
+        "Eastern Asia": [
+          "Japan – NTT Docomo",
+          "South Korea – SK Telecom"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n258",
+      "bandName": "K-band",
+      "centerFreq": "0",
+      "uplinkRange": "24.25-27.5",
+      "downlinkRange": "",
+      "duplexMode": "",
+      "region": "North America; Europe; Southern Asia; Oceania",
+      "deployments": {
+        "North America": [
+          "United States – T-Mobile"
+        ],
+        "Europe": [
+          "Germany – Deutsche Telekom",
+          "United Kingdom – Vodafone UK"
+        ],
+        "Southern Asia": [
+          "India – Jio"
+        ],
+        "Oceania": [
+          "Australia – Telstra"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n259",
+      "bandName": "V-band",
+      "centerFreq": "0",
+      "uplinkRange": "39.5-43.5",
+      "downlinkRange": "",
+      "duplexMode": "",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n260",
+      "bandName": "Ka-band",
+      "centerFreq": "0",
+      "uplinkRange": "37-40",
+      "downlinkRange": "",
+      "duplexMode": "",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n261",
+      "bandName": "Ka-band",
+      "centerFreq": "0",
+      "uplinkRange": "27.5-28.35",
+      "downlinkRange": "",
+      "duplexMode": "",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – T-Mobile",
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n262",
+      "bandName": "V-band",
+      "centerFreq": "0",
+      "uplinkRange": "47.2-48.2",
+      "downlinkRange": "",
+      "duplexMode": "",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n263",
+      "bandName": "V-band",
+      "centerFreq": "0",
+      "uplinkRange": "57-71",
+      "downlinkRange": "",
+      "duplexMode": "TDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n510",
+      "bandName": "Ka-band",
+      "centerFreq": "0",
+      "uplinkRange": "27.5-28.35",
+      "downlinkRange": "17.3-20.2",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    },
+    {
+      "bandNumber": "n511",
+      "bandName": "Ka-band",
+      "centerFreq": "0",
+      "uplinkRange": "28.35-30",
+      "downlinkRange": "17.3-20.2",
+      "duplexMode": "FDD",
+      "region": "North America",
+      "deployments": {
+        "North America": [
+          "United States – Verizon"
+        ]
+      }
+    },
+    {
+      "bandNumber": "n512",
+      "bandName": "Ka-band",
+      "centerFreq": "0",
+      "uplinkRange": "27.5-30",
+      "downlinkRange": "17.3-20.2",
+      "duplexMode": "FDD",
+      "region": "",
+      "deployments": {}
+    }
+  ]
+}
+    </script>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel" data-presets="env,react">
+        /* global bootstrap */
+        const { useState, useEffect, useMemo } = React;
+
+        // Helpers
+        const getSortableValue = (value, key) => {
+            if (key === 'bandNumber') {
+                return parseInt(String(value).replace(/^\s*n/i, ''), 10);
+            }
+            if (key === 'centerFreq') {
+                if (value == null) return NaN;
+                const str = String(value);
+                const firstSegment = str.split(/[-–—]/)[0];
+                const match = firstSegment.match(/\d+(\.\d+)?/);
+                return match ? parseFloat(match[0]) : NaN;
+            }
+            return value;
+        };
+
+        // mmWave helpers
+        const MMWAVE_BANDS = new Set(['n257','n258','n259','n260','n261','n262','n263','n510','n511','n512']);
+
+        const isMmWave = (band) => {
+            return band && typeof band.bandNumber === 'string' && MMWAVE_BANDS.has(band.bandNumber);
+        };
+
+        // Return a numeric "center frequency" in MHz for sorting/coloring
+        const getBandCenterMHz = (band) => {
+            if (!band) return NaN;
+
+            // Try direct centerFreq in MHz
+            const cf = getSortableValue(band.centerFreq, 'centerFreq');
+            if (!isNaN(cf) && cf > 0) return cf;
+
+            // For mmWave, try to infer from ranges (which are in GHz in the data)
+            const parseRangeGHzAvg = (rangeStr) => {
+                if (!rangeStr || typeof rangeStr !== 'string') return NaN;
+                const parts = rangeStr.replace(/[^\d.\-–—]/g, '').split(/[-–—]/);
+                if (parts.length < 2) return NaN;
+                const a = parseFloat(parts[0]);
+                const b = parseFloat(parts[1]);
+                if (isNaN(a) || isNaN(b)) return NaN;
+                const avgGHz = (a + b) / 2;
+                // Convert to MHz if values look like GHz (< 1000)
+                return avgGHz < 1000 ? avgGHz * 1000 : avgGHz;
+            };
+
+            if (isMmWave(band)) {
+                // Prefer uplinkRange then downlinkRange
+                let mhz = parseRangeGHzAvg(band.uplinkRange);
+                if (isNaN(mhz)) mhz = parseRangeGHzAvg(band.downlinkRange);
+                if (!isNaN(mhz)) return mhz;
+
+                // Fallback mapping (MHz)
+                const fallback = {
+                    n510: 28000,
+                    n511: 29500,
+                    n512: 28500,
+                    n257: 28000,
+                    n258: 26000,
+                    n259: 41000,
+                    n260: 39000,
+                    n261: 28000,
+                    n262: 47000,
+                    n263: 60000
+                };
+                return fallback[band.bandNumber] || NaN;
+            }
+
+            return cf;
+        };
+
+        // Display value for the Center Freq column
+        const displayCenter = (band) => isMmWave(band) ? 'mmwave' : (band.centerFreq ?? '—');
+
+        // Map frequency (MHz) to a modern HSL gradient color (low=red, high=blue)
+        const colorForFreq = (freqMHz) => {
+            if (isNaN(freqMHz)) return '#f8f9fa';
+            // Clamp to a reasonable telecom range to avoid outliers skewing results
+            const min = 300;     // ~VHF/UHF
+            const max = 70000;   // 70 GHz
+            const f = Math.min(Math.max(freqMHz, min), max);
+            const t = (f - min) / (max - min); // 0..1
+            const hue = 240 * (1 - t); // 0=red, 120=green, 240=blue (we invert for red->blue)
+            const sat = 70; // %
+            const light = 90 - 25 * t; // 90% down to ~65% for higher freqs
+            return `hsl(${hue.toFixed(0)} ${sat}% ${light.toFixed(0)}%)`;
+        };
+
+        // Deterministic color per unique category key (e.g., center frequency string)
+        const hashStringToHue = (str) => {
+            let h = 0;
+            for (let i = 0; i < str.length; i++) {
+                h = ((h << 5) - h) + str.charCodeAt(i);
+                h |= 0; // Convert to 32bit int
+            }
+            return Math.abs(h) % 360;
+        };
+        const colorFromKey = (key) => {
+            const baseHue = hashStringToHue(String(key || ''));
+            const hue = (baseHue + 25) % 360;      // offset for modern palette shift
+            const sat = 72;                        // higher saturation for clearer distinction
+            const light = 84 - (baseHue % 20) * 0.5; // slight lightness variance across categories
+            return `hsl(${hue} ${sat}% ${light}%)`;
+        };
+
+        const getRowStyle = (band) => {
+            if (!band) return {};
+            let color;
+            if (isMmWave(band)) {
+                const freq = getBandCenterMHz(band);
+                color = colorForFreq(freq);
+            } else {
+                // Assign a distinct, modern color for each unique non-mmWave center frequency value
+                color = colorFromKey(band.centerFreq ?? '');
+            }
+            return {
+                backgroundColor: color,
+                '--bs-table-bg': color,
+                '--bs-table-striped-bg': color,
+                '--bs-table-hover-bg': color
+            };
+        };
+
+        const REGION_ORDER = [
+            "North America",
+            "Latin America & Caribbean",
+            "Europe",
+            "Western Asia (Middle East)",
+            "Central Asia",
+            "Southern Asia",
+            "Eastern Asia",
+            "South-Eastern Asia",
+            "Africa",
+            "Oceania"
+        ];
+
+        const orderRegions = (keys) => {
+            const known = REGION_ORDER.filter(r => keys.includes(r));
+            const extras = keys.filter(k => !REGION_ORDER.includes(k)).sort();
+            return [...known, ...extras];
+        };
+
+        const App = () => {
+            const [bands, setBands] = useState([]);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [sortConfig, setSortConfig] = useState({ key: 'bandNumber', direction: 'ascending' });
+            const [selectedRegions, setSelectedRegions] = useState([]);
+            const [selectedBandNumbers, setSelectedBandNumbers] = useState([]);
+            const [selectedCenterFreqs, setSelectedCenterFreqs] = useState([]);
+            const [selectedModes, setSelectedModes] = useState([]);
+
+
+            useEffect(() => {
+                try {
+                    const dataEl = document.getElementById('bands-json');
+                    if (dataEl) {
+                        const parsed = JSON.parse(dataEl.textContent || '{}');
+                        if (parsed && Array.isArray(parsed.bands)) {
+                            setBands(parsed.bands);
+                            return;
+                        }
+                    }
+                    console.warn('Bands JSON not found or invalid.');
+                } catch (err) {
+                    console.error('Failed to parse bands JSON:', err);
+                }
+            }, []);
+
+            const regions = useMemo(() => {
+                const set = new Set();
+                bands.forEach(b => {
+                    if (typeof b.region === 'string') {
+                        b.region.split(';').forEach(part => {
+                            const r = part.trim();
+                            if (r) set.add(r);
+                        });
+                    }
+                });
+                // Order known regions nicely; extras get appended sorted
+                return ['All', ...orderRegions(Array.from(set))];
+            }, [bands]);
+
+            const bandNumbers = useMemo(() => {
+                const allBandNumbers = bands.map(band => band.bandNumber).filter(Boolean);
+                const sortedUnique = [...new Set(allBandNumbers)]
+                    .sort((a, b) => getSortableValue(a, 'bandNumber') - getSortableValue(b, 'bandNumber'));
+                return ['All', ...sortedUnique];
+            }, [bands]);
+
+            const centerFreqs = useMemo(() => {
+                // Build a unique list where all mmWave bands are represented by 'mmwave'
+                const set = new Set();
+                bands.forEach(b => {
+                    if (isMmWave(b)) set.add('mmwave');
+                    else if (b.centerFreq != null) set.add(String(b.centerFreq));
+                });
+                const list = Array.from(set);
+                const num = (v) => v === 'mmwave' ? 60000 : getSortableValue(v, 'centerFreq');
+                list.sort((a, b) => num(a) - num(b));
+                return ['All', ...list];
+            }, [bands]);
+
+
+            const modes = useMemo(() => {
+                const set = new Set();
+                bands.forEach(b => {
+                    if (b.duplexMode) set.add(b.duplexMode);
+                });
+                return ['All', ...Array.from(set).sort()];
+            }, [bands]);
+
+            const todayStr = useMemo(
+                () => new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }),
+                []
+            );
+
+            // Build a stable palette: each unique non‑mmWave center frequency gets its own color
+            const nonMmwaveCenterFreqs = useMemo(() => {
+                const set = new Set();
+                bands.forEach(b => {
+                    if (!isMmWave(b) && b.centerFreq != null) {
+                        set.add(String(b.centerFreq));
+                    }
+                });
+                return Array.from(set).sort(
+                    (a, b) => getSortableValue(a, 'centerFreq') - getSortableValue(b, 'centerFreq')
+                );
+            }, [bands]);
+
+            const cfColorMap = useMemo(() => {
+                const list = nonMmwaveCenterFreqs;
+                const n = Math.max(list.length, 1);
+                const offset = 18; // hue offset for pleasant palette start
+                const sat = 72;
+                const baseLight = 84;
+                const map = {};
+                list.forEach((cf, idx) => {
+                    const hue = Math.round((idx * 360 / n + offset) % 360);
+                    // introduce slight lightness variance so adjacent hues are more distinct
+                    const light = baseLight - (idx % 6) * 2;
+                    map[cf] = `hsl(${hue} ${sat}% ${light}%)`;
+                });
+                return map;
+            }, [nonMmwaveCenterFreqs]);
+
+            // Row style that uses palette for non‑mmWave and gradient for mmWave
+            const getRowStyleApp = (band) => {
+                if (!band) return {};
+                let color;
+                if (isMmWave(band)) {
+                    const freq = getBandCenterMHz(band);
+                    color = colorForFreq(freq);
+                } else {
+                    const key = String(band.centerFreq ?? '');
+                    color = cfColorMap[key] || colorFromKey(key);
+                }
+                return {
+                    backgroundColor: color,
+                    '--bs-table-bg': color,
+                    '--bs-table-striped-bg': color,
+                    '--bs-table-hover-bg': color
+                };
+            };
+
+            const sortedBands = useMemo(() => {
+                let sortableItems = [...bands];
+                if (sortConfig !== null) {
+                    sortableItems.sort((a, b) => {
+                        const avRaw = sortConfig.key === 'centerFreq'
+                            ? getBandCenterMHz(a)
+                            : getSortableValue(a[sortConfig.key], sortConfig.key);
+                        const bvRaw = sortConfig.key === 'centerFreq'
+                            ? getBandCenterMHz(b)
+                            : getSortableValue(b[sortConfig.key], sortConfig.key);
+
+                        const aVal = Number.isNaN(avRaw) ? Number.POSITIVE_INFINITY : avRaw;
+                        const bVal = Number.isNaN(bvRaw) ? Number.POSITIVE_INFINITY : bvRaw;
+
+                        if (aVal < bVal) return sortConfig.direction === 'ascending' ? -1 : 1;
+                        if (aVal > bVal) return sortConfig.direction === 'ascending' ? 1 : -1;
+                        return 0;
+                    });
+                }
+                return sortableItems;
+            }, [bands, sortConfig]);
+
+            const filteredBands = useMemo(() => {
+                return sortedBands.filter(band => {
+                    const searchMatch = Object.values(band).some(value =>
+                        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+                    );
+
+                    const bandRegions = typeof band.region === 'string'
+                        ? band.region.split(';').map(s => s.trim()).filter(Boolean)
+                        : [];
+
+                    const regionMatch =
+                        selectedRegions.length === 0 ||
+                        bandRegions.some(r => selectedRegions.includes(r));
+
+                    const bandNumberMatch =
+                        selectedBandNumbers.length === 0 ||
+                        selectedBandNumbers.includes(band.bandNumber);
+
+                    const centerFreqMatch =
+                        selectedCenterFreqs.length === 0 ||
+                        selectedCenterFreqs.some(sel =>
+                            sel === 'mmwave' ? isMmWave(band) : String(band.centerFreq) === sel
+                        );
+
+                    const modeMatch =
+                        selectedModes.length === 0 ||
+                        selectedModes.includes(band.duplexMode);
+
+                    const deploymentRegionMatch = true;
+
+                    return searchMatch && regionMatch && bandNumberMatch && centerFreqMatch && modeMatch && deploymentRegionMatch;
+                });
+            }, [sortedBands, searchTerm, selectedRegions, selectedBandNumbers, selectedCenterFreqs, selectedModes]);
+
+            const requestSort = (key) => {
+                setSortConfig(prev => {
+                    let direction = 'ascending';
+                    if (prev.key === key && prev.direction === 'ascending') direction = 'descending';
+                    return { key, direction };
+                });
+            };
+
+            // Full deployments list: one region per row, no collapsing
+            const renderDeployments = (band) => {
+                const deploymentsObj = band.deployments;
+                if (!deploymentsObj || typeof deploymentsObj !== 'object') return '—';
+
+                const regions = orderRegions(
+                    Object.keys(deploymentsObj).filter(
+                        r => Array.isArray(deploymentsObj[r]) && deploymentsObj[r].length
+                    )
+                );
+                if (!regions.length) return '—';
+
+                return (
+                    <div className="deployments-preview">
+                        {regions.map(region => (
+                            <div className="region-line" key={region}>
+                                <span className="fw-semibold">{region}:</span>{' '}
+                                {(deploymentsObj[region] || []).map((op, idx) => (
+                                    <span key={idx} className="badge text-bg-light me-1">{op}</span>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                );
+            };
+
+
+            return (
+                <>
+                    <div className="card">
+                        <div className="card-header d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-baseline gap-2">
+                                <h5 className="mb-0 fw-semibold">Spectrum Bands Dashboard</h5>
+                                <span className="text-muted small">{todayStr}</span>
+                            </div>
+                        </div>
+                        <div className="card-body">
+                            <div className="row mb-3">
+                                <div className="col-md-12">
+                                    <div className="search-bar-wrapper">
+                                        <input
+                                            type="text"
+                                            className="form-control search-bar w-100"
+                                            placeholder="Search..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                        {searchTerm && (
+                                            <button className="clear-search-btn" onClick={() => setSearchTerm('')} aria-label="Clear search">
+                                                &#x2715;
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="row mb-3">
+                                <div className="col-md-3">
+                                    <div className="btn-group slicer-group w-100">
+                                        <button type="button" className="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {selectedCenterFreqs.length === 0 ? 'Center Frequency' : `Center Frequency (${selectedCenterFreqs.length})`}
+                                        </button>
+                                        <ul className="dropdown-menu">
+                                            <li className="px-3 py-1">
+                                                <label className="d-flex align-items-center gap-2 w-100">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={selectedCenterFreqs.length === centerFreqs.filter(v => v !== "All").length}
+                                                        onChange={(e) => {
+                                                            const all = centerFreqs.filter(v => v !== "All").map(v => String(v));
+                                                            setSelectedCenterFreqs(e.target.checked ? all : []);
+                                                        }}
+                                                    />
+                                                    <span>Select All</span>
+                                                </label>
+                                            </li>
+                                            {centerFreqs.filter(v => v !== "All").map(freq => {
+                                                const val = String(freq);
+                                                const checked = selectedCenterFreqs.includes(val);
+                                                return (
+                                                    <li key={val} className="px-3 py-1">
+                                                        <label className="d-flex align-items-center gap-2 w-100">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                checked={checked}
+                                                                onChange={() =>
+                                                                    setSelectedCenterFreqs(prev =>
+                                                                        checked ? prev.filter(v => v !== val) : [...prev, val]
+                                                                    )
+                                                                }
+                                                            />
+                                                            <span>{val}</span>
+                                                        </label>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <div className="btn-group slicer-group w-100">
+                                        <button type="button" className="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {selectedBandNumbers.length === 0 ? 'Band Number' : `Band Number (${selectedBandNumbers.length})`}
+                                        </button>
+                                        <ul className="dropdown-menu">
+                                            <li className="px-3 py-1">
+                                                <label className="d-flex align-items-center gap-2 w-100">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={selectedBandNumbers.length === bandNumbers.filter(v => v !== "All").length}
+                                                        onChange={(e) => {
+                                                            const all = bandNumbers.filter(v => v !== "All");
+                                                            setSelectedBandNumbers(e.target.checked ? all : []);
+                                                        }}
+                                                    />
+                                                    <span>Select All</span>
+                                                </label>
+                                            </li>
+                                            {bandNumbers.filter(v => v !== "All").map(bn => {
+                                                const checked = selectedBandNumbers.includes(bn);
+                                                return (
+                                                    <li key={bn} className="px-3 py-1">
+                                                        <label className="d-flex align-items-center gap-2 w-100">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                checked={checked}
+                                                                onChange={() =>
+                                                                    setSelectedBandNumbers(prev =>
+                                                                        checked ? prev.filter(v => v !== bn) : [...prev, bn]
+                                                                    )
+                                                                }
+                                                            />
+                                                            <span>{bn}</span>
+                                                        </label>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <div className="btn-group slicer-group w-100">
+                                        <button type="button" className="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {selectedRegions.length === 0 ? 'Region' : `Region (${selectedRegions.length})`}
+                                        </button>
+                                        <ul className="dropdown-menu">
+                                            <li className="px-3 py-1">
+                                                <label className="d-flex align-items-center gap-2 w-100">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={selectedRegions.length === regions.filter(v => v !== "All").length}
+                                                        onChange={(e) => {
+                                                            const all = regions.filter(v => v !== "All");
+                                                            setSelectedRegions(e.target.checked ? all : []);
+                                                        }}
+                                                    />
+                                                    <span>Select All</span>
+                                                </label>
+                                            </li>
+                                            {regions.filter(v => v !== "All").map(region => {
+                                                const checked = selectedRegions.includes(region);
+                                                return (
+                                                    <li key={region} className="px-3 py-1">
+                                                        <label className="d-flex align-items-center gap-2 w-100">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                checked={checked}
+                                                                onChange={() =>
+                                                                    setSelectedRegions(prev =>
+                                                                        checked ? prev.filter(v => v !== region) : [...prev, region]
+                                                                    )
+                                                                }
+                                                            />
+                                                            <span>🌐 {region}</span>
+                                                        </label>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <div className="btn-group slicer-group w-100">
+                                        <button type="button" className="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            {selectedModes.length === 0 ? 'Mode' : `Mode (${selectedModes.length})`}
+                                        </button>
+                                        <ul className="dropdown-menu">
+                                            <li className="px-3 py-1">
+                                                <label className="d-flex align-items-center gap-2 w-100">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={selectedModes.length === modes.filter(v => v !== "All").length}
+                                                        onChange={(e) => {
+                                                            const all = modes.filter(v => v !== "All");
+                                                            setSelectedModes(e.target.checked ? all : []);
+                                                        }}
+                                                    />
+                                                    <span>Select All</span>
+                                                </label>
+                                            </li>
+                                            {modes.filter(v => v !== "All").map(mode => {
+                                                const checked = selectedModes.includes(mode);
+                                                return (
+                                                    <li key={mode} className="px-3 py-1">
+                                                        <label className="d-flex align-items-center gap-2 w-100">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                checked={checked}
+                                                                onChange={() =>
+                                                                    setSelectedModes(prev =>
+                                                                        checked ? prev.filter(v => v !== mode) : [...prev, mode]
+                                                                    )
+                                                                }
+                                                            />
+                                                            <span>{mode}</span>
+                                                        </label>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div className="table-responsive">
+                                <table className="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th onClick={() => requestSort('bandNumber')}>Band</th>
+                                            <th onClick={() => requestSort('bandName')}>Name</th>
+                                            <th onClick={() => requestSort('centerFreq')}>Center Freq (MHz)</th>
+                                            <th>DL Range (MHz)</th>
+                                            <th>UL Range (MHz)</th>
+                                            <th>Mode</th>
+                                            <th>Deployments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredBands.map((band, index) => (
+                                            <tr key={index} style={getRowStyleApp(band)}>
+                                                <td>{band.bandNumber}</td>
+                                                <td>{band.bandName}</td>
+                                                <td>{displayCenter(band)}</td>
+                                                <td>{band.downlinkRange || '—'}</td>
+                                                <td>{band.uplinkRange || '—'}</td>
+                                                <td>{band.duplexMode || '—'}</td>
+                                                <td className="deployments-cell">
+                                                    {renderDeployments(band)}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
